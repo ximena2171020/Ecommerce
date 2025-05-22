@@ -34,7 +34,7 @@ namespace Ecommerce.API.Controllers
         public async Task<ActionResult> Delete(int id)
         {
 
-            var afectedRows = await _context.Countries.Where(c => c.Id == id).ExecuteDeleteAsync();
+            var afectedRows = await _context.Countries.Where(c => c.id == id).ExecuteDeleteAsync();
 
             if (afectedRows == 0)
             {
@@ -49,30 +49,18 @@ namespace Ecommerce.API.Controllers
 
         public async Task<ActionResult> Get()
         {
-            return Ok(await _context.Countries.Include(c => c.States).ToListAsync());
+            return Ok(await _context.Countries.ToListAsync());
         }
+
+
 
         [HttpPost]
 
         public async Task<ActionResult> Post(Country country )
         {
-            try
-            {
-                _context.Update(country);
-                await _context.SaveChangesAsync();
-                return Ok(country);
-            }
-            catch (DbUpdateException update)
-            {
-                if (update.InnerException.Message.Contains("duplicate")) return BadRequest("Ya hay un registro con el mismo Nombre");
-
-                return BadRequest(update.InnerException.Message);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
+            _context.Add(country);
+            await _context.SaveChangesAsync();
+            return Ok(country);
         }
     }
 }
